@@ -83,7 +83,7 @@ lv_obj_t * labelClock;
 // lv_obj_t * labelHome;
 
 
-xSemaphoreHandle xSemaphoreAtualiza;
+volatile xSemaphoreHandle xSemaphoreAtualiza;
 
 volatile int flag_ligar = 0;
 volatile int render = 0;
@@ -94,7 +94,7 @@ volatile int current_hour, current_min, current_sec;
 /* rtc                                                                  */
 /************************************************************************/
 
-int flag_rtc_alarm = 0;
+volatile int flag_rtc_alarm = 0;
 
 void RTC_Handler(void) {
     uint32_t ul_status = rtc_get_status(RTC);
@@ -182,11 +182,9 @@ static void clock_handler(lv_event_t * e) {
 
 static void down_handler(lv_event_t * e) {
     lv_event_code_t code = lv_event_get_code(e);
-    char *c;
-    int temp;
     if(code == LV_EVENT_CLICKED) {
-		c = lv_label_get_text(labelSetValue);
-		temp = atoi(c);
+		char c = lv_label_get_text(labelSetValue);
+		int temp = atoi(c);
 		lv_label_set_text_fmt(labelSetValue, "%02d", temp - 1);
 	}
     
@@ -194,11 +192,9 @@ static void down_handler(lv_event_t * e) {
 
 static void up_handler(lv_event_t * e) {
     lv_event_code_t code = lv_event_get_code(e);
-    char *c;
-    int temp;
     if(code == LV_EVENT_CLICKED) {
-        c = lv_label_get_text(labelSetValue);
-        temp = atoi(c);
+        char c = lv_label_get_text(labelSetValue);
+        int temp = atoi(c);
         lv_label_set_text_fmt(labelSetValue, "%02d", temp + 1);
     }
 	
@@ -243,7 +239,7 @@ void lv_ligar(void){
 	lv_style_set_bg_color(&style, lv_color_black());
 
 	/* Botao ligar */
-    lv_obj_t * labelBtn1;
+    
     lv_obj_t * btn1 = lv_btn_create(lv_scr_act());
     lv_obj_add_event_cb(btn1, ligar_handler, LV_EVENT_ALL, NULL);
 	// lv_obj_set_width(btn1, 60);  lv_obj_set_height(btn1, 60);
@@ -265,7 +261,7 @@ void lv_termostato(void) {
 
 
 	/* Botao ligar */
-    lv_obj_t * labelBtn1;
+    
     lv_obj_t * btn1 = lv_btn_create(lv_scr_act());
     lv_obj_add_event_cb(btn1, ligar_handler, LV_EVENT_ALL, NULL);
 	// lv_obj_set_width(btn1, 60);  lv_obj_set_height(btn1, 60);
@@ -277,7 +273,7 @@ void lv_termostato(void) {
 	lv_obj_center(labelBtn1);
 
 	/* Botao menu */
-	lv_obj_t * labelBtn2;
+	
 	lv_obj_t * btn2 = lv_btn_create(lv_scr_act());
 	lv_obj_add_event_cb(btn2, menu_handler, LV_EVENT_ALL, NULL);
 	// lv_obj_set_width(btn2, 60);  lv_obj_set_height(btn2, 60);
@@ -289,7 +285,6 @@ void lv_termostato(void) {
 	lv_obj_center(labelBtn2);
 
 	/* Botao clock */
-	lv_obj_t * labelBtn3;
 	lv_obj_t * btn3 = lv_btn_create(lv_scr_act());
 	lv_obj_add_event_cb(btn3, clock_handler, LV_EVENT_ALL, NULL);
 	// lv_obj_set_width(btn3, 60);  lv_obj_set_height(btn3, 60);
@@ -301,7 +296,6 @@ void lv_termostato(void) {
 	lv_obj_center(labelBtn3);
 
 	// /* Botao seta para baixo*/
-	lv_obj_t * labelBtn4;
 	lv_obj_t * btn4 = lv_btn_create(lv_scr_act());
 	lv_obj_add_event_cb(btn4, down_handler, LV_EVENT_ALL, NULL);
 	lv_obj_align(btn4, LV_ALIGN_BOTTOM_RIGHT, 0,-21);
@@ -312,7 +306,6 @@ void lv_termostato(void) {
 	lv_obj_center(labelBtn4);
 
 	/* Botao seta para cima*/
-	lv_obj_t * labelBtn5;
 	lv_obj_t * btn5 = lv_btn_create(lv_scr_act());
 	lv_obj_add_event_cb(btn5, up_handler, LV_EVENT_ALL, NULL);
 	lv_obj_align_to(btn5, btn4, LV_ALIGN_TOP_LEFT, -80, -8);
@@ -323,7 +316,6 @@ void lv_termostato(void) {
 	lv_obj_center(labelBtn5);	
 
 	/* Botao Home */
-	lv_obj_t * labelBtn6;
 	lv_obj_t * btn6 = lv_btn_create(lv_scr_act());
 	lv_obj_add_event_cb(btn6, home_handler, LV_EVENT_ALL, NULL);
 	lv_obj_align_to(btn6, btn5, LV_ALIGN_TOP_LEFT, -50, -40);
@@ -367,7 +359,6 @@ void lv_termostato(void) {
 	// lv_label_set_text_fmt(labelClock, "%02d:%02d", 17, 46);
 
 	/* Botao CLOCK2 */
-	lv_obj_t * labelBtn7;
 	lv_obj_t * btn7 = lv_btn_create(lv_scr_act());
 	lv_obj_add_event_cb(btn7, setting_handler, LV_EVENT_ALL, NULL);
 	lv_obj_align_to(btn7, labelSetValue, LV_ALIGN_BOTTOM_LEFT, -5, 30);
@@ -379,7 +370,6 @@ void lv_termostato(void) {
 	
 
 	/* Botao Heat */
-	lv_obj_t * labelBtn8;
 	lv_obj_t * btn8 = lv_btn_create(lv_scr_act());
 	lv_obj_add_event_cb(btn8, heat_handler, LV_EVENT_ALL, NULL);
 	lv_obj_align_to(btn8, labelSetValue, LV_ALIGN_BOTTOM_RIGHT, -5, 30);
@@ -486,7 +476,7 @@ void my_flush_cb(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * 
 }
 
 void my_input_read(lv_indev_drv_t * drv, lv_indev_data_t*data) {
-	int px, py, pressed;
+	int px, py;
 	
 	if (readPoint(&px, &py))
 		data->state = LV_INDEV_STATE_PRESSED;
@@ -507,14 +497,12 @@ void configure_lvgl(void) {
 	disp_drv.hor_res = LV_HOR_RES_MAX;      /*Set the horizontal resolution in pixels*/
 	disp_drv.ver_res = LV_VER_RES_MAX;      /*Set the vertical resolution in pixels*/
 
-	lv_disp_t * disp;
-	disp = lv_disp_drv_register(&disp_drv); /*Register the driver and save the created display objects*/
 	
 	/* Init input on LVGL */
 	lv_indev_drv_init(&indev_drv);
 	indev_drv.type = LV_INDEV_TYPE_POINTER;
 	indev_drv.read_cb = my_input_read;
-	lv_indev_t * my_indev = lv_indev_drv_register(&indev_drv);
+	//lv_indev_t * my_indev = lv_indev_drv_register(&indev_drv);
 }
 
 /************************************************************************/
